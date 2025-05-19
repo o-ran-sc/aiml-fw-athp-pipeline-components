@@ -34,6 +34,11 @@ repositories:
     - aiml-fw/athp/pipeline-components
 committers:
     - <<: *oran_aiml_fw_ptl
+    - name: 'Swaraj Kumar'
+      email: 'swaraj.kumar@samsung.com'
+      company: 'Samsung Electronics'
+      id: 'swaraj.kumar.samsung'
+      timezone: 'Asia/Seoul'
 
 tsc:
     # yamllint disable rule:line-length
