@@ -21,11 +21,19 @@ from kfp import kubernetes
 @dsl.pipeline
 def pipeline():
     from feature_extraction.feature_extraction_component import download_features
+    from model_training.model_training_component import model_training
 
     comp = download_features(featurepath="featurepath", featureList=["feature1", "feature2"])
     comp.set_caching_options(False)
     kubernetes.set_image_pull_policy(comp, "IfNotPresent")
 
     print(f"output of feature extraction:{comp.output}")
+
+    comp2 = model_training(featurepath=comp.output, featureList=["feature1", "feature2"])
+    comp2.set_caching_options(False)
+    kubernetes.set_image_pull_policy(comp2, "IfNotPresent")
+
+    print(f"output of model training:{comp2.output}")
+
 
 compiler.Compiler().compile(pipeline, "pipeline.yaml")
