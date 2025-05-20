@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "feature_extraction"
+authors = [
+    {name = "Subhash Kumar Singh", email = "subh.singh@samsung.com"}
+]
+description = "component for feature-extraction"
+version = "0.0.1"
+requires-python = ">=3.10"
+dependencies = [
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
