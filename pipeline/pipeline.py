@@ -22,6 +22,7 @@ from kfp import kubernetes
 def pipeline():
     from feature_extraction.feature_extraction_component import download_features
     from model_training.model_training_component import model_training
+    from model_storage.model_storage_component import model_storage
 
     comp = download_features(featurepath="featurepath", featureList=["feature1", "feature2"])
     comp.set_caching_options(False)
@@ -34,6 +35,13 @@ def pipeline():
     kubernetes.set_image_pull_policy(comp2, "IfNotPresent")
 
     print(f"output of model training:{comp2.output}")
+
+    comp3 = model_storage(modelpath=comp2.output)
+    comp3.set_caching_options(False)
+    kubernetes.set_image_pull_policy(comp3, "IfNotPresent")
+
+    print(f"output of model storage:{comp3.output}")
+
 
 
 compiler.Compiler().compile(pipeline, "pipeline.yaml")
