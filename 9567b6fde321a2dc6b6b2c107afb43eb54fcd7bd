@@ -33,6 +33,23 @@
       "message": "LGTM. Unable to merge due to permission issue.",
       "revId": "9567b6fde321a2dc6b6b2c107afb43eb54fcd7bd",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9e922cd9_120c464e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-05-23T11:17:07Z",
+      "side": 1,
+      "message": "Merging patch as @swaraj is facing permission issue.",
+      "revId": "9567b6fde321a2dc6b6b2c107afb43eb54fcd7bd",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
