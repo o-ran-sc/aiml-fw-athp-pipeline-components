@@ -16,6 +16,23 @@
       "message": "lgtm",
       "revId": "0c42aa9a0b3e8812474eaf812618f44a5f41ae05",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6d023177_19898a1d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002600
+      },
+      "writtenOn": "2025-05-23T11:13:25Z",
+      "side": 1,
+      "message": "LGTM. Unable to merge due to permission issue.",
+      "revId": "0c42aa9a0b3e8812474eaf812618f44a5f41ae05",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
