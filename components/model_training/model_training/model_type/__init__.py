@@ -15,17 +15,3 @@
 #   limitations under the License.
 #
 # ==================================================================================
-from kfp.dsl import component
-from typing import List
-
-@component(
-    base_image="python:3.12",
-    packages_to_install=["pandas==2.2.2", "featurestoresdk==0.3", "numpy==1.26.4", "tensorflow"],
-    target_image="model_training:v1",
-    pip_index_urls=["https://pypi.org/simple/"],
-)
-def model_training(featurepath: str, featureList: List[str], model_type: str = 'LSTM')->str:
-    from logger import get_default_logger
-    logger = get_default_logger(name='model-training')
-    logger.info(f'model training will be done with featurepath:{featurepath} featurelist:{featureList} model_type:{model_type}')
-    return "model_path"
