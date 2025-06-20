@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "39dd6b90_0a7bcdff",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-06-20T10:48:21Z",
+      "side": 1,
+      "message": "Merging the code on behalf of @swaraj due to merge rights issue in his account.",
+      "revId": "1651b59e7bc72ef03b7bc6af7f3f0a25577e1492",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
