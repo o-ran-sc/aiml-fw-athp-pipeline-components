@@ -16,17 +16,38 @@
 #
 # ==================================================================================
 from kfp.dsl import component
-from typing import List
+from typing import List, Dict
 
 @component(
     base_image="python:3.12",
-    packages_to_install=[],
+    packages_to_install=["cassandra-driver==3.29.1", "pandas", "featurestoresdk", "modelmetricsdk"],
     target_image="feature_extraction:v1",
     pip_index_urls=["https://pypi.org/simple/"],
 )
-def download_features(featurepath: str, featureList: List[str])->str:
-    import logging
-    logger = logging.getLogger('download_features')
-    logger.setLevel(logging.INFO)
+def download_features(featurepath: str, featureList: List[str],
+                      target_storage_config: Dict[str, str], target_storage_key: str)->str:
+    import json
+    from logger import get_default_logger
+    from featurestoresdk.feature_store_sdk import FeatureStoreSdk
+    from modelmetricsdk.artifact_manager import ArtifactManager
+
+    logger = get_default_logger(name='feature_extraction')
     logger.info(f'donwload feature from path:{featurepath} featurelist:{featureList}')
-    return ""
+
+    logger.debug(f'start extracting feature')
+    fs_sdk = FeatureStoreSdk()
+    features = fs_sdk.get_features(featurepath, featureList)
+
+    logger.debug(f"dataframe: {features}")
+
+    TMP_FILENAME_CSV = 'out.csv'
+    logger.debug(f'will write {TMP_FILENAME_CSV} to target storage config:{target_storage_config} key:{target_storage_key}')
+    features.to_csv(TMP_FILENAME_CSV, index=False)
+
+    logger.debug(f'loading storage config from json {target_storage_config}')
+
+    manager = ArtifactManager(target_storage_config, logger=logger)
+    manager.upload_dataset(TMP_FILENAME_CSV, target_storage_key)
+
+    logger.info(f'component is successfully executed and feature is availble at key:{target_storage_key}')
+    return "success"
