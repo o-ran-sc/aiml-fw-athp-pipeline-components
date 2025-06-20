@@ -25,29 +25,71 @@ def pipeline():
     from model_storage.model_storage_component import model_storage
     from metrics_store.metrics_store_component import metrics_store
 
-    comp = download_features(featurepath="featurepath", featureList=["feature1", "feature2"])
-    comp.set_caching_options(False)
-    kubernetes.set_image_pull_policy(comp, "IfNotPresent")
+    config_str = {
+        "endpoint_url" : "http://leofs.kubeflow:8080",
+        "aws_access_key_id" : "leofs",
+        "aws_secreat_access_key" : "## aws secreat key ##"
+    }
 
-    print(f"output of feature extraction:{comp.output}")
+    featureList = ["pdcpBytesDl", "pdcpBytesUl"]
+    target_storage_key = 'test_dataset_influx_01_1'
+    featurepath = "testing_influxdb_01_1"
 
-    comp2 = model_training(featurepath=comp.output, featureList=["feature1", "feature2"])
+    ################# create pvc ########################
+    pvcComp = kubernetes.CreatePVC(access_modes=['ReadWriteMany'],
+                         pvc_name_suffix='-test',
+                         size= '1Gi',
+                         storage_class_name= 'nfs-client',
+                         )
+
+    ##################### download feature ##################
+    comp1 = download_features(featurepath= featurepath,
+                             featureList=featureList,
+                             target_storage_config=config_str,
+                             target_storage_key=target_storage_key)
+    comp1.set_caching_options(False)
+    kubernetes.set_image_pull_policy(comp1, "IfNotPresent")
+
+    print(f"output of feature extraction:{comp1.output}")
+
+    ####################   model training #################
+    comp2 = model_training(featurepath=target_storage_key,
+                           featureList=featureList,
+                           model_config={"a": "b"},
+                           target_storage_config=config_str,
+                           target_dataset_name=target_storage_key)
     comp2.set_caching_options(False)
+    kubernetes.mount_pvc(task=comp2,
+                         pvc_name=pvcComp.outputs['name'],
+                         mount_path='/model')
     kubernetes.set_image_pull_policy(comp2, "IfNotPresent")
 
-    print(f"output of model training:{comp2.output}")
+    print(f"output of model training:{comp2.outputs}")
 
-    comp3 = model_storage(modelpath=comp2.output)
+    ################## model storage ######################
+    comp3 = model_storage(modelpath=comp2.outputs['path'],
+                          modelname='test-model-1',
+                          modelversion='1.0')
     comp3.set_caching_options(False)
     kubernetes.set_image_pull_policy(comp3, "IfNotPresent")
+    kubernetes.mount_pvc(task=comp3,
+                         pvc_name=pvcComp.outputs['name'],
+                         mount_path='/model')
 
     print(f"output of model storage:{comp3.output}")
 
-    with dsl.If(comp3.output == 'done'):
-        comp4 = metrics_store(metrics={"accuracy": ".8"})
-        comp4.set_caching_options(False)
-        kubernetes.set_image_pull_policy(comp4, "IfNotPresent")
+    ################# metrics store #########################
+    comp4 = metrics_store(metrics={"accuracy": comp2.outputs['accuracy']})
+    comp4.set_caching_options(False)
+    kubernetes.set_image_pull_policy(comp4, "IfNotPresent")
 
-        print(f"output of model storage:{comp4.output}")
+    print(f"output of model storage:{comp4.output}")
+
+    ################ delete pvc #############################
+    # Note: should be used as exithandler but component with
+    # dependency could not be used as exithandler in kubeflow.
+    deletePVC = kubernetes.DeletePVC(pvc_name=pvcComp.outputs['name'])
+    deletePVC.after(comp3, comp4)
+
 
 compiler.Compiler().compile(pipeline, "pipeline.yaml")
