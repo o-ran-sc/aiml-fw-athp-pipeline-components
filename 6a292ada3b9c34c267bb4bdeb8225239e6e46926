@@ -16,6 +16,23 @@
       "message": "lgtm",
       "revId": "6a292ada3b9c34c267bb4bdeb8225239e6e46926",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7e5cbd38_7d961366",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-06-20T10:49:10Z",
+      "side": 1,
+      "message": "Merging the code on behalf of @swaraj due to merge rights issue in his account.",
+      "revId": "6a292ada3b9c34c267bb4bdeb8225239e6e46926",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
