@@ -16,10 +16,10 @@
 #
 # ==================================================================================
 from kfp import compiler, dsl
-from kfp import kubernetes
+from kfp import kubernetes, compiler
 
-@dsl.pipeline
-def pipeline():
+@dsl.pipeline()
+def pipeline(featurepath: str, epochs: str, modelname: str, modelversion:str):
     from feature_extraction.feature_extraction_component import download_features
     from model_training.model_training_component import model_training
     from model_storage.model_storage_component import model_storage
@@ -28,12 +28,12 @@ def pipeline():
     config_str = {
         "endpoint_url" : "http://leofs.kubeflow:8080",
         "aws_access_key_id" : "leofs",
-        "aws_secreat_access_key" : "## aws secreat key ##"
+        "aws_secreat_access_key" : "bGiBt0q2ub"
     }
 
     featureList = ["pdcpBytesDl", "pdcpBytesUl"]
     target_storage_key = 'test_dataset_influx_01_1'
-    featurepath = "testing_influxdb_01_1"
+    # featurepath = "testing_influxdb_01_1"
 
     ################# create pvc ########################
     pvcComp = kubernetes.CreatePVC(access_modes=['ReadWriteMany'],
@@ -48,6 +48,7 @@ def pipeline():
                              target_storage_config=config_str,
                              target_storage_key=target_storage_key)
     comp1.set_caching_options(False)
+    comp1.after(pvcComp)
     kubernetes.set_image_pull_policy(comp1, "IfNotPresent")
 
     print(f"output of feature extraction:{comp1.output}")
@@ -59,6 +60,7 @@ def pipeline():
                            target_storage_config=config_str,
                            target_dataset_name=target_storage_key)
     comp2.set_caching_options(False)
+    comp2.after(comp1)
     kubernetes.mount_pvc(task=comp2,
                          pvc_name=pvcComp.outputs['name'],
                          mount_path='/model')
@@ -68,8 +70,8 @@ def pipeline():
 
     ################## model storage ######################
     comp3 = model_storage(modelpath=comp2.outputs['path'],
-                          modelname='test-model-1',
-                          modelversion='1.0')
+                          modelname=modelname,
+                          modelversion=modelversion)
     comp3.set_caching_options(False)
     kubernetes.set_image_pull_policy(comp3, "IfNotPresent")
     kubernetes.mount_pvc(task=comp3,
