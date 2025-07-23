@@ -33,6 +33,23 @@
       "message": "lgtm",
       "revId": "c656576a38929b26315ddb93fd0250187d357805",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "89442614_02bef815",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-07-23T08:15:45Z",
+      "side": 1,
+      "message": "Merging this patch as @swaraj facing issue with his commit rights.",
+      "revId": "c656576a38929b26315ddb93fd0250187d357805",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
