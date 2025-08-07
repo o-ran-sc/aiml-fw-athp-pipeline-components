@@ -16,6 +16,23 @@
       "message": "License looks good!!",
       "revId": "33bde90dd3f2bed6f0066111f4afeb93c0d28f2b",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c0f4e3ba_e675bffb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002600
+      },
+      "writtenOn": "2025-08-07T09:27:05Z",
+      "side": 1,
+      "message": "lgtm",
+      "revId": "33bde90dd3f2bed6f0066111f4afeb93c0d28f2b",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
