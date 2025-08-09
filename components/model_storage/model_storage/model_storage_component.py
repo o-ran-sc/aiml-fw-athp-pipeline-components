@@ -34,19 +34,19 @@ def model_storage(modelpath: str,
     logger.info(f'model storage will be done to modelpath:{modelpath}')
 
     # store model
-    print(f'register the trained model to mme')
+    logger.info(f'register the trained model to mme')
     artifactversion="1.0.0"    # need to decide if it is right to provide 1.0.0
     url = f"http://modelmgmtservice.traininghost:8082/ai-ml-model-registration/v1/model-registrations/updateArtifact/{modelname}/{modelversion}/{artifactversion}"
 
-    print(f'sending request to URL :{url}')
+    logger.info(f'sending request to URL :{url}')
     try:
         updated_model_info= requests.post(url).json()
-        print(updated_model_info)
+        logger.info(updated_model_info)
     except Exception as e:
-        print(f'error while mme operation: {e}')
+        logger.info(f'error while mme operation: {e}')
         raise e
 
-    print(f'uploading model to leofs with name:{modelname}, modelver:{modelversion}, artifactnumber:{artifactversion}')
+    logger.info(f'uploading model to leofs with name:{modelname}, modelver:{modelversion}, artifactnumber:{artifactversion}')
     mmsdk = ModelMetricsSdk()
 
     try:
@@ -54,8 +54,8 @@ def model_storage(modelpath: str,
                            model_version=modelversion,
                            artifact_version=artifactversion)
     except Exception as e:
-        print(f'error while uploading the model:{e}')
+        logger.info(f'error while uploading the model:{e}')
         raise e
 
-    print('successfully uploaded the model')
+    logger.info('successfully uploaded the model')
     return "done"
