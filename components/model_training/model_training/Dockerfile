@@ -19,6 +19,6 @@ FROM python:3.12
 
 WORKDIR /usr/local/src/kfp/components
 COPY runtime-requirements.txt runtime-requirements.txt
-RUN pip install --index-url https://pypi.org/simple/ --trusted-host https://pypi.org/simple/ --no-cache-dir kfp==2.12.1 numpy==1.26.4 pandas==2.2.2 setuptools tensorflow featurestoresdk modelmetricsd
+RUN pip install --index-url https://pypi.org/simple/ --trusted-host https://pypi.org/simple/ --no-cache-dir kfp==2.12.1 numpy==1.26.4 pandas==2.2.2 setuptools tensorflow featurestoresdk modelmetricsdk
 
 COPY . .
