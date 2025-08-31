@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "57b486f3_9a3fd8d6",
+        "filename": "docs/aimlfw_setup.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-08-31T01:20:59Z",
+      "side": 1,
+      "message": "I think updating both packages on the official pypi server to 0.3 is necessary since some users don\u0027t need to run the private pypi server.\n\nhttps://pypi.org/project/modelmetricsdk/\nhttps://pypi.org/project/featurestoresdk/",
+      "revId": "3744a980fe378417ab408bbfccfe528742bdd6b3",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
