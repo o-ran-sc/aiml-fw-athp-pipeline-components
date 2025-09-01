@@ -51,6 +51,24 @@
       "parentUuid": "57b486f3_9a3fd8d6",
       "revId": "3744a980fe378417ab408bbfccfe528742bdd6b3",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "df11d3cd_8c599cd3",
+        "filename": "docs/aimlfw_setup.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-09-01T06:38:25Z",
+      "side": 1,
+      "message": "Yes Dr. Moonki, I agree with you. Best approach it to have PyPI package updated.",
+      "parentUuid": "0afab1fc_05c0de32",
+      "revId": "3744a980fe378417ab408bbfccfe528742bdd6b3",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
   ]
 }
