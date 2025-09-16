@@ -19,8 +19,8 @@ from kfp.dsl import component
 from typing import List, Dict
 
 @component(
-    base_image="python:3.12",
-    packages_to_install=["cassandra-driver==3.29.1", "pandas", "featurestoresdk", "modelmetricsdk"],
+    base_image="python:3.10",
+    packages_to_install=["featurestoresdk", "modelmetricsdk"],
     target_image="feature_extraction:v1",
     pip_index_urls=["https://pypi.org/simple/"],
 )

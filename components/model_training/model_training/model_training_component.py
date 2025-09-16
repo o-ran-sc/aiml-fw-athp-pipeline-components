@@ -19,8 +19,8 @@ from kfp.dsl import component
 from typing import List, Dict, NamedTuple
 
 @component(
-    base_image="python:3.12",
-    packages_to_install=["pandas==2.2.2", "featurestoresdk==0.3", "numpy==1.26.4", "tensorflow"],
+    base_image="python:3.10",
+    packages_to_install=["featurestoresdk", "modelmetricsdk"],
     target_image="model_training:v1",
     pip_index_urls=["https://pypi.org/simple/"],
 )
@@ -33,7 +33,7 @@ def model_training(featurepath: str, target_storage_config: Dict[str, str],
     import pandas as pd
     from modelmetricsdk.artifact_manager import ArtifactManager
 
-    logger = get_default_logger(name='model-training', level=logging.DEBUG)
+    logger = get_default_logger(name='model-training')
     logger.info(f'model training will be done with featurepath:{featurepath} featurelist:{featureList} model_type:{model_type}')
 
     TEMP_DATASET_CSV = 'test.csv'

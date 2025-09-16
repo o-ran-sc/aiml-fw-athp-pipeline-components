@@ -18,7 +18,7 @@
 from kfp.dsl import component
 from typing import Dict
 @component(
-    base_image="python:3.12",
+    base_image="python:3.10",
     packages_to_install=[],
     target_image="metrics_store:v1",
     pip_index_urls=["https://pypi.org/simple/"],
