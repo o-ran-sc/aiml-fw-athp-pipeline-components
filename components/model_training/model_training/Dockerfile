@@ -15,10 +15,9 @@
 #   limitations under the License.
 #
 # ==================================================================================
-FROM python:3.12
+FROM python:3.10
 
 WORKDIR /usr/local/src/kfp/components
-COPY runtime-requirements.txt runtime-requirements.txt
-RUN pip install --index-url https://pypi.org/simple/ --trusted-host https://pypi.org/simple/ --no-cache-dir kfp==2.12.1 numpy==1.26.4 pandas==2.2.2 setuptools tensorflow featurestoresdk modelmetricsdk
+RUN pip install --index-url https://pypi.org/simple/ --trusted-host https://pypi.org/simple/ --no-cache-dir kfp==2.14.3 setuptools tensorflow==2.20.0 featurestoresdk modelmetricsdk
 
 COPY . .

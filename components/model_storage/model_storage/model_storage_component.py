@@ -18,7 +18,7 @@
 from kfp.dsl import component
 
 @component(
-    base_image="python:3.12",
+    base_image="python:3.10",
     packages_to_install=["modelmetricsdk", "requests==2.28.0"],
     target_image="model_storage:v1",
     pip_index_urls=["https://pypi.org/simple/"],
@@ -50,7 +50,7 @@ def model_storage(modelpath: str,
     mmsdk = ModelMetricsSdk()
 
     try:
-        mmsdk.upload_model(model_path="./", model_name=modelname,
+        mmsdk.upload_model(model_path="/model/export", model_name=modelname,
                            model_version=modelversion,
                            artifact_version=artifactversion)
     except Exception as e:

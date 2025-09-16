@@ -16,8 +16,8 @@
 #
 # ==================================================================================
 
-FROM python:3.12
+FROM python:3.10
 
 WORKDIR /usr/local/src/kfp/components
-RUN pip install --index-url https://pypi.org/simple/ --no-cache-dir pandas cassandra-driver==3.29.1 pandas setuptools kfp==2.12.1 featurestoresdk modelmetricsdk
+RUN pip install --index-url https://pypi.org/simple/ --no-cache-dir setuptools kfp==2.14.3 featurestoresdk modelmetricsdk
 COPY . .
