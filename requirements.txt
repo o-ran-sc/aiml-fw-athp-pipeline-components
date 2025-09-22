@@ -1,0 +1,6 @@
+modelmetricsdk
+featurestoresdk
+kfp==2.14.3 
+docker
+build
+kfp-kubernetes
