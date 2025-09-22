@@ -4,3 +4,5 @@ kfp == 2.13.0
 kfp-kubernetes == 1.2.0
 docker
 build
+requests
+colorlog
