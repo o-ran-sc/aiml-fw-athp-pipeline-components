@@ -19,7 +19,7 @@ from kfp.dsl import component
 
 @component(
     base_image="python:3.10",
-    packages_to_install=["modelmetricsdk", "requests==2.28.0"],
+    packages_to_install=["modelmetricsdk==0.3.1","requests==2.28.0","kfp==2.13.0"],
     target_image="model_storage:v1",
     pip_index_urls=["https://pypi.org/simple/"],
 )

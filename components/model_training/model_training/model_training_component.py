@@ -20,7 +20,7 @@ from typing import List, Dict, NamedTuple
 
 @component(
     base_image="python:3.10",
-    packages_to_install=["featurestoresdk", "modelmetricsdk"],
+    packages_to_install=["tensorflow==2.17.1", "modelmetricsdk==0.3.1","kfp==2.13.0","pandas==2.2.1"],
     target_image="model_training:v1",
     pip_index_urls=["https://pypi.org/simple/"],
 )
