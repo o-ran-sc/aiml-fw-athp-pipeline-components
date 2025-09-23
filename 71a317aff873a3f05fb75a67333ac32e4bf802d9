@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "dfb0c8a2_8a434277",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-09-23T15:06:25Z",
+      "side": 1,
+      "message": "I think requirement.txt is revised here : https://gerrit.o-ran-sc.org/r/c/aiml-fw/athp/pipeline-components/+/14975/1/requirements.txt",
+      "revId": "71a317aff873a3f05fb75a67333ac32e4bf802d9",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "eea5c0a8_5013a4ce",
