@@ -27,8 +27,7 @@ def pipeline(featurepath: str, epochs: str, modelname: str, modelversion:str):
 
     config_str = {
         "endpoint_url" : "http://leofs.kubeflow:8080",
-        "aws_access_key_id" : "leofs",
-        "aws_secreat_access_key" : "## aws secreat key ##"
+        "aws_access_key_id" : "leofs"
     }
 
     featureList = ["pdcpBytesDl", "pdcpBytesUl"]

@@ -19,8 +19,8 @@ from kfp.dsl import component
 from typing import Dict
 @component(
     base_image="python:3.10",
-    packages_to_install=[],
-    target_image="metrics_store:v1",
+    packages_to_install=["kfp==2.13.0"],
+    target_image="t25kim/metrics_store:v5",
     pip_index_urls=["https://pypi.org/simple/"],
 )
 def metrics_store(metrics: Dict[str, str]) -> str:

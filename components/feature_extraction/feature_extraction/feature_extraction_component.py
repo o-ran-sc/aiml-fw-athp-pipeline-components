@@ -20,8 +20,8 @@ from typing import List, Dict
 
 @component(
     base_image="python:3.10",
-    packages_to_install=["featurestoresdk", "modelmetricsdk"],
-    target_image="feature_extraction:v1",
+    packages_to_install=["featurestoresdk==0.3.1", "modelmetricsdk==0.3.1","kfp==2.13.0"],
+    target_image="t25kim/feature_extraction:v5",
     pip_index_urls=["https://pypi.org/simple/"],
 )
 def download_features(featurepath: str, featureList: List[str],
