@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "3222473a_397886e5",
+        "filename": "requirements.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-09-23T15:05:25Z",
+      "side": 1,
+      "message": "`modelmetricsdk` used in pipeline. @Moksh could you confirm.",
+      "parentUuid": "eea5c0a8_5013a4ce",
+      "revId": "71a317aff873a3f05fb75a67333ac32e4bf802d9",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "0e0a5a23_b801fcbb",
         "filename": "requirements.txt",
         "patchSetId": 1
@@ -31,6 +49,24 @@
       "writtenOn": "2025-09-23T08:46:21Z",
       "side": 1,
       "message": "Don\u0027t we need to install specific version?",
+      "revId": "71a317aff873a3f05fb75a67333ac32e4bf802d9",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "08499efa_6baf871b",
+        "filename": "requirements.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-09-23T15:05:25Z",
+      "side": 1,
+      "message": "I think this could be matched with the specified version of `kfp\u003d\u003d2.14.3`.. @Moksh could you confirm it.",
+      "parentUuid": "0e0a5a23_b801fcbb",
       "revId": "71a317aff873a3f05fb75a67333ac32e4bf802d9",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
