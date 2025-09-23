@@ -20,7 +20,7 @@ from kfp.dsl import component
 @component(
     base_image="python:3.10",
     packages_to_install=["modelmetricsdk", "requests==2.28.0"],
-    target_image="model_storage:v1",
+    target_image="t25kim/model_storage:v5",
     pip_index_urls=["https://pypi.org/simple/"],
 )
 def model_storage(modelpath: str,

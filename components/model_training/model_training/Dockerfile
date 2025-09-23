@@ -18,6 +18,6 @@
 FROM python:3.10
 
 WORKDIR /usr/local/src/kfp/components
-RUN pip install --index-url https://pypi.org/simple/ --trusted-host https://pypi.org/simple/ --no-cache-dir kfp==2.14.3 setuptools tensorflow==2.20.0 featurestoresdk modelmetricsdk
+RUN pip install --index-url https://pypi.org/simple/ --trusted-host https://pypi.org/simple/ --no-cache-dir kfp==2.13.0 kfp-kubernetes==1.2.0 setuptools tensorflow==2.17.1 featurestoresdk modelmetricsdk
 
 COPY . .

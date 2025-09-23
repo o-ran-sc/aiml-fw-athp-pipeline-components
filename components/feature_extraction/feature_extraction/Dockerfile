@@ -19,5 +19,5 @@
 FROM python:3.10
 
 WORKDIR /usr/local/src/kfp/components
-RUN pip install --index-url https://pypi.org/simple/ --no-cache-dir setuptools kfp==2.14.3 featurestoresdk modelmetricsdk
+RUN pip install --index-url https://pypi.org/simple/ --no-cache-dir setuptools kfp==2.13.0 kfp-kubernetes==1.2.0 featurestoresdk modelmetricsdk
 COPY . .

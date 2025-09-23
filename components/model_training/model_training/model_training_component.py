@@ -20,8 +20,8 @@ from typing import List, Dict, NamedTuple
 
 @component(
     base_image="python:3.10",
-    packages_to_install=["featurestoresdk", "modelmetricsdk"],
-    target_image="model_training:v1",
+    packages_to_install=["kfp==2.13.0", "kfp-kubernetes==1.2.0", "tensorflow==2.17.1", "featurestoresdk", "modelmetricsdk"],
+    target_image="t25kim/model_training:v5",
     pip_index_urls=["https://pypi.org/simple/"],
 )
 def model_training(featurepath: str, target_storage_config: Dict[str, str],

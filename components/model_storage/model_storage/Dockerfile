@@ -3,6 +3,6 @@
 FROM python:3.10
 
 WORKDIR /usr/local/src/kfp/components
-RUN pip install --index-url https://pypi.org/simple/ --trusted-host https://pypi.org/simple/ --no-cache-dir kfp==2.14.3 setuptools requests==2.28.0 modelmetricsdk
+RUN pip install --index-url https://pypi.org/simple/ --trusted-host https://pypi.org/simple/ --no-cache-dir kfp==2.13.0 setuptools requests==2.28.0 modelmetricsdk
 
 COPY . .
