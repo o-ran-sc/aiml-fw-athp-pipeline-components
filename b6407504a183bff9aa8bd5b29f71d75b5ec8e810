@@ -3,6 +3,40 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "4ce7c83e_a2fd9af2",
+        "filename": "components/feature_extraction/feature_extraction/Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-09-24T03:08:49Z",
+      "side": 1,
+      "message": "@subh.singh@samsung.com Does `feature_extraction` require `kfp` and `kfp-kubernetes`? If unnecessary, delete them. Please see the other Dockerfiles too.",
+      "revId": "b6407504a183bff9aa8bd5b29f71d75b5ec8e810",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c312ce66_5fa783c3",
+        "filename": "components/feature_extraction/feature_extraction/feature_extraction_component.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-09-24T03:08:49Z",
+      "side": 1,
+      "message": "Are `kfp` and `kfp-kubernetes` required? I can\u0027t find code to use the api of kfp and kfp-kubernetes in the download_features method.",
+      "revId": "b6407504a183bff9aa8bd5b29f71d75b5ec8e810",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "db1cc1e4_0cb4a9ea",
         "filename": "requirements.txt",
         "patchSetId": 1
