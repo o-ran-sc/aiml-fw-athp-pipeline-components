@@ -38,6 +38,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "8148a751_16d61237",
+        "filename": "components/feature_extraction/feature_extraction/Dockerfile",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1002793
+      },
+      "writtenOn": "2025-09-25T13:15:05Z",
+      "side": 1,
+      "message": "`kfp` is needed in `component-impl` pods to as launcher. I tried to avoid `kfp` which resulted failed execution of component pods. Below are the logs:\n\n```\n/usr/local/bin/python3: Error while finding module specification for \u0027kfp.dsl.executor_main\u0027 (ModuleNotFoundError: No module named \u0027kfp\u0027)\nI0925 08:26:58.736337      15 launcher_v2.go:150] publish success.\nF0925 08:26:58.736385      15 main.go:49] failed to execute component: exit status 1\n```\n\nand remaining dependency I was able to resolve.",
+      "parentUuid": "4215ad76_da058958",
+      "revId": "b6407504a183bff9aa8bd5b29f71d75b5ec8e810",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c312ce66_5fa783c3",
         "filename": "components/feature_extraction/feature_extraction/feature_extraction_component.py",
         "patchSetId": 1
@@ -73,6 +91,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c344b411_38e131da",
+        "filename": "components/feature_extraction/feature_extraction/feature_extraction_component.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1002793
+      },
+      "writtenOn": "2025-09-25T13:15:05Z",
+      "side": 1,
+      "message": "please refer my previous comment.",
+      "parentUuid": "5f8be298_b1df9f7b",
+      "revId": "b6407504a183bff9aa8bd5b29f71d75b5ec8e810",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "db1cc1e4_0cb4a9ea",
         "filename": "requirements.txt",
         "patchSetId": 1
@@ -102,6 +138,24 @@
       "side": 1,
       "message": "Sure, Let\u0027s first validate in your setup and we will optimize the imports.",
       "parentUuid": "db1cc1e4_0cb4a9ea",
+      "revId": "b6407504a183bff9aa8bd5b29f71d75b5ec8e810",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2b8b035c_d4d55460",
+        "filename": "requirements.txt",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1002793
+      },
+      "writtenOn": "2025-09-25T13:15:05Z",
+      "side": 1,
+      "message": "Yes, removed.",
+      "parentUuid": "758a1422_0a375611",
       "revId": "b6407504a183bff9aa8bd5b29f71d75b5ec8e810",
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     }
