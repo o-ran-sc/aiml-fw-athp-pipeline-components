@@ -125,6 +125,24 @@
       "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ffb1dcae_50a4d7ed",
+        "filename": "components/feature_extraction/feature_extraction/feature_extraction_component.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-09-25T13:54:38Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "c344b411_38e131da",
+      "revId": "b6407504a183bff9aa8bd5b29f71d75b5ec8e810",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "db1cc1e4_0cb4a9ea",
