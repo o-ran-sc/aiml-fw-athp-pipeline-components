@@ -55,3 +55,4 @@ def pipeline():
     comp3 = model_storage(modelpath=comp2.outputs['path'], ...)
     comp4 = metrics_store(metrics={"accuracy": comp2.outputs['accuracy']})
     # ... manage dependencies and resources ...
+  
