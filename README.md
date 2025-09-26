@@ -1,57 +1,143 @@
-# AIML Pipeline Components
+# Composable Pipeline Setup and Running Guide
 
-This repository provides a set of **reusable Kubeflow pipeline components** for building end-to-end AI/ML workflows. Each component is designed to perform a specific task in the pipeline and can be independently developed, tested, and reused across different pipelines and projects.
+This document provides a step-by-step guide for setting up the environment, building the pipeline components, and running a composable pipeline.
 
-## Key Concepts
+---
 
-- **Component**: A self-contained, reusable unit of computation (e.g., feature extraction, model training, model storage, metrics storage).
-- **Pipeline**: An assembly of components, orchestrated to solve a specific ML use case.
+## Table of Contents
+1. [Composable Pipeline Setup](#composable-pipeline-setup)
+2. [Build Pipeline Components](#build-pipeline-components)
+3. [Running the Pipeline](#running-the-pipeline)
+4. [Manual Component Build Commands (Alternative)](#manual-component-build-commands-alternative)
 
-## Available Components
+---
 
-- **Feature Extraction**  
-  Extracts features from data sources and stores them for downstream tasks.  
-  See: [`feature_extraction/feature_extraction_component.py`](components/feature_extraction/feature_extraction/feature_extraction_component.py)
+## Composable Pipeline Setup
 
-- **Model Training**  
-  Trains a machine learning model using the extracted features.  
-  See: [`model_training/model_training_component.py`](components/model_training/model_training/model_training_component.py)
+Follow these steps to set up your environment for the pipeline components.
 
-- **Model Storage**  
-  Registers and uploads trained models to a model registry or storage backend.  
-  See: [`model_storage/model_storage_component.py`](components/model_storage/model_storage/model_storage_component.py)
+1.  **Clone the Repository**
+    ```bash
+    git clone "https://gerrit.o-ran-sc.org/r/aiml-fw/athp/pipeline-components"
+    cd pipeline-components
+    ```
 
-- **Metrics Store**  
-  Stores evaluation metrics for trained models.  
-  See: [`metrics_store/metrics_store_component.py`](components/metrics_store/metrics_store/metrics_store_component.py)
+2.  **Update System Packages**
+    ```bash
+    sudo apt update && sudo apt upgrade
+    ```
 
-Each component is implemented as a Kubeflow pipeline component and can be built and pushed as a container image using the provided [Makefile](components/Makefile).
+3.  **Install Python Pip**
+    ```bash
+    sudo apt install python3-pip
+    ```
 
-## Reusing Components
+4.  **Install Python Virtual Environment**
+    ```bash
+    sudo apt install python3.10-venv
+    ```
+    > **Note:** Ensure `ensure-pip` is enabled. If not, installing `python3.10-venv` as above should resolve it.
 
-You can reuse these components in your own Kubeflow pipelines by importing them and assembling them as needed. The components are designed to be modular and configurable, making it easy to plug them into different workflows.
+5.  **Create and Activate Virtual Environment**
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
 
-### Example: Assembling a Pipeline
+6.  **Install Python Dependencies**
+    ```bash
+    pip3 install -r requirements.txt
+    ```
 
-The file [`pipeline/pipeline.py`](pipeline/pipeline.py) demonstrates how to assemble the reusable components into a complete Kubeflow pipeline:
+---
 
-- Import each component at the top of the pipeline function.
-- Instantiate and connect the components, passing outputs from one as inputs to the next.
-- Use Kubeflow DSL and Kubernetes helpers to manage resources (e.g., PVCs).
+## Build Pipeline Components
 
-**Excerpt from [`pipeline/pipeline.py`](pipeline/pipeline.py):**
+This section guides you through building the individual component images and then all components together.
 
-````python
-from feature_extraction.feature_extraction_component import download_features
-from model_training.model_training_component import model_training
-from model_storage.model_storage_component import model_storage
-from metrics_store.metrics_store_component import metrics_store
+1.  **Navigate to Components Directory**
+    ```bash
+    cd pipeline-components/components
+    ```
 
-@dsl.pipeline
-def pipeline():
-    # ... set up configs ...
-    comp1 = download_features(...)
-    comp2 = model_training(...)
-    comp3 = model_storage(modelpath=comp2.outputs['path'], ...)
-    comp4 = metrics_store(metrics={"accuracy": comp2.outputs['accuracy']})
-    # ... manage dependencies and resources ...
+2.  **Build and Push Individual Component Images**
+    Use the provided Makefile. Before building, **change the target image for all components to your respective IP** (e.g., `192.168.180.70:500/<component_name>:v1`).
+
+    ```bash
+    make build-feature-extraction
+    make build-metrics-store
+    make build-model-storage
+    make build-model-training
+    ```
+    > **Purpose:** This step ensures that the `kfp_config.ini` file is generated for each component. You may ignore any errors raised during this process, but please verify that the configuration files are created.
+
+3.  **Build All Components**
+    Once every component has been built separately:
+    ```bash
+    make build-all
+    ```
+
+4.  **Install All Components**
+    ```bash
+    make install-all
+    ```
+
+---
+
+## Running the Pipeline
+
+After setting up and building the components, follow these steps to generate and upload your pipeline.
+
+1.  **Navigate to Pipeline Directory**
+    ```bash
+    cd pipeline-components/pipeline
+    ```
+
+2.  **Generate Pipeline YAML**
+    This command creates the `pipeline.yaml` file.
+    ```bash
+    python3 pipeline.py
+    ```
+
+3.  **Download Patch for Upload Pipeline**
+    > **Note:** You will need the `upload_pipeline.py` utility file. This is intended to be a separate patch.
+    > **Prerequisites:**
+    > *   `pip install colorlog requests`
+    > *   Update the IP address within the `upload_pipeline.py` script.
+
+4.  **Upload the Pipeline**
+    Execute the following command to upload your generated pipeline:
+    ```bash
+    python3 upload_pipeline.py -f pipeline.yaml -p <pipeline_name> -i <ip_address>
+    ```
+    Replace `<pipeline_name>` with your desired name for the pipeline.
+
+---
+
+## Manual Component Build Commands (Alternative)
+
+If you need to build components manually, you can use the following `buildctl` commands. Run these from each component's directory (e.g., `components/model_training/model_training`).
+
+### Model Training
+```bash
+sudo buildctl --addr=nerdctl-container://buildkitd build --no-cache --frontend dockerfile.v0 --opt filename=Dockerfile --local dockerfile=. --local context=. --output type=oci,name=t25kim/model_training:v5 | sudo nerdctl load --namespace k8s.io
+```
+
+### Metrics Store
+```bash
+sudo buildctl --addr=nerdctl-container://buildkitd build --no-cache --frontend dockerfile.v0 --opt filename=Dockerfile --local dockerfile=. --local context=. --output type=oci,name=t25kim/metrics_store:v5 | sudo nerdctl load --namespace k8s.io
+```
+
+### Feature Extraction
+```bash
+sudo buildctl --addr=nerdctl-container://buildkitd build --no-cache --frontend dockerfile.v0 --opt filename=Dockerfile --local dockerfile=. --local context=. --output type=oci,name=t25kim/feature_extraction:v5 | sudo nerdctl load --namespace k8s.io
+```
+
+### Model Storage
+```bash
+sudo buildctl --addr=nerdctl-container://buildkitd build --no-cache --frontend dockerfile.v0 --opt filename=Dockerfile --local dockerfile=. --local context=. --output type=oci,name=t25kim/model_storage:v5 | sudo nerdctl load --namespace k8s.io
+```
+
+---
+
+**Your pipeline is now uploaded!** You can start your model training by providing the **`pipeline_name`** and **`pipeline_version`** when creating a training job.
