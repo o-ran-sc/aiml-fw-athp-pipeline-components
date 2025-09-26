@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ca56aa1c_77a3b794",
+        "filename": "pipeline/upload_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-09-26T13:19:08Z",
+      "side": 1,
+      "message": "add one more exception handler to except Exception",
+      "range": {
+        "startLine": 69,
+        "startChar": 0,
+        "endLine": 69,
+        "endChar": 53
+      },
+      "revId": "006dfc9fe568d4c63c972aacd86e5f8c620e68ef",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8a763c29_9c12bb95",
+        "filename": "pipeline/upload_pipeline.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-09-26T13:19:08Z",
+      "side": 1,
+      "message": "please move this logger to try block for better clarity.",
+      "revId": "006dfc9fe568d4c63c972aacd86e5f8c620e68ef",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
