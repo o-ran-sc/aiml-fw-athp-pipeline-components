@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d47bfeed_d9f4fbd2",
+        "filename": "components/feature_extraction/feature_extraction/feature_extraction_component.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-10-13T18:07:02Z",
+      "side": 1,
+      "message": "You could check TM APIs to collect the list of featureGroup and it\u0027s details instead of using the direct access to DB.",
+      "range": {
+        "startLine": 44,
+        "startChar": 0,
+        "endLine": 52,
+        "endChar": 47
+      },
+      "revId": "886d5fc97d8a78bbd6eae8d6463cddd0ccb648b7",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
