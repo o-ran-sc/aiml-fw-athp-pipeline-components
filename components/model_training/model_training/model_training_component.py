@@ -20,12 +20,48 @@ from typing import List, Dict, NamedTuple
 
 @component(
     base_image="python:3.10",
-    packages_to_install=["tensorflow==2.17.1", "modelmetricsdk==0.3.1","kfp==2.13.0","pandas==2.2.1"],
-    target_image="model_training:v1",
+    packages_to_install=["tensorflow==2.17.1", "modelmetricsdk==0.3.1","kfp==2.13.0","pandas==2.2.1", "featurestoresdk==0.3.1"],
+    target_image="163.180.177.119:500/model_training:v1",
     pip_index_urls=["https://pypi.org/simple/"],
 )
+def _extract_feature_group_name(featurepath: str) -> str:
+    """
+    Extract feature group name from featurepath
+    Example: 'aimlfw_feature_08_3' -> 'aimlfw_feature_08'
+    """
+    # Split by underscore and remove the last part (training job id)
+    parts = featurepath.split('_')
+    if len(parts) >= 2:
+        # Remove trailing numeric parts to get feature group name
+        while parts and parts[-1].isdigit():
+            parts.pop()
+        return '_'.join(parts)
+    return featurepath  # Fallback
+def _get_feature_list_from_config(feature_group_name: str) -> List[str]:
+    """
+    Retrieve feature group configuration and extract feature list
+    Returns: List of feature names
+    """
+    from featurestoresdk.feature_store_sdk import FeatureStoreSdk 
+    try:
+        fs_sdk = FeatureStoreSdk()
+
+        query = f"""
+        SELECT column_name 
+        FROM system_schema.columns 
+        WHERE keyspace_name = '{fs_sdk.feature_store_db_name}' 
+        AND table_name = '{feature_group_name}'
+        """
+        # Column information look up from Cassandra system table
+        response = fs_sdk.session.execute(query)
+        featureList = [row.column_name for row in response]
+        return featureList
+
+    except Exception as e:
+        return []
+
 def model_training(featurepath: str, target_storage_config: Dict[str, str],
-                   target_dataset_name: str, featureList: List[str],
+                   target_dataset_name: str,
                    model_config: Dict[str, str],
                    model_type: str = 'LSTM') -> NamedTuple('outputs', path=str, accuracy=str): # type: ignore
     from logger import get_default_logger
@@ -33,6 +69,8 @@ def model_training(featurepath: str, target_storage_config: Dict[str, str],
     import pandas as pd
     from modelmetricsdk.artifact_manager import ArtifactManager
 
+    feature_group_name = _extract_feature_group_name(featurepath)
+    featureList = _get_feature_list_from_config(feature_group_name)
     logger = get_default_logger(name='model-training')
     logger.info(f'model training will be done with featurepath:{featurepath} featurelist:{featureList} model_type:{model_type}')
 
@@ -44,9 +82,8 @@ def model_training(featurepath: str, target_storage_config: Dict[str, str],
     logger.debug(f'dataframe after download: {features.head()}')
 
     logger.debug(f'Previous Data Types are --> ', features.dtypes)
-    # TODO: Needed to fix to make generic
-    features["pdcpBytesDl"] = pd.to_numeric(features["pdcpBytesDl"], downcast="float")
-    features["pdcpBytesUl"] = pd.to_numeric(features["pdcpBytesUl"], downcast="float")
+    for col in featureList:
+        features[col] = pd.to_numeric(features[col], errors="coerce", downcast="float")
     logger.debug(f'New Data Types are --> ', features.dtypes)
 
     X, y = split_series(features.values, 10, 1)

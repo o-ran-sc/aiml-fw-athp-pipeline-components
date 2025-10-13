@@ -24,7 +24,42 @@ from typing import List, Dict
     target_image="feature_extraction:v1",
     pip_index_urls=["https://pypi.org/simple/"],
 )
-def download_features(featurepath: str, featureList: List[str],
+def _extract_feature_group_name(featurepath: str) -> str:
+    """
+    Extract feature group name from featurepath
+    Example: 'aimlfw_feature_08_3' -> 'aimlfw_feature_08'
+    """
+    parts = featurepath.split('_')
+    if len(parts) >= 2:
+        while parts and parts[-1].isdigit():
+            parts.pop()
+        return '_'.join(parts)
+    return featurepath
+
+def _get_feature_list_from_config(feature_group_name: str) -> List[str]:
+    """
+    Retrieve feature list from Cassandra system tables
+    Returns: List of feature names
+    """
+    from featurestoresdk.feature_store_sdk import FeatureStoreSdk 
+    try:
+        fs_sdk = FeatureStoreSdk()
+
+        query = f"""
+        SELECT column_name 
+        FROM system_schema.columns 
+        WHERE keyspace_name = '{fs_sdk.feature_store_db_name}' 
+        AND table_name = '{feature_group_name}'
+        """
+        
+        response = fs_sdk.session.execute(query)
+        featureList = [row.column_name for row in response]
+        return featureList
+
+    except Exception as e:
+        return []
+
+def download_features(featurepath: str,
                       target_storage_config: Dict[str, str], target_storage_key: str)->str:
     import json
     from logger import get_default_logger
@@ -32,6 +67,8 @@ def download_features(featurepath: str, featureList: List[str],
     from modelmetricsdk.artifact_manager import ArtifactManager
 
     logger = get_default_logger(name='feature_extraction')
+    feature_group_name = _extract_feature_group_name(featurepath)
+    featureList = _get_feature_list_from_config(feature_group_name)
     logger.info(f'donwload feature from path:{featurepath} featurelist:{featureList}')
 
     logger.debug(f'start extracting feature')
