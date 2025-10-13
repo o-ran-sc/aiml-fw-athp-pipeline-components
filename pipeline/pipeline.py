@@ -30,7 +30,6 @@ def pipeline(featurepath: str, epochs: str, modelname: str, modelversion:str):
         "aws_access_key_id" : "leofs"
     }
 
-    featureList = ["pdcpBytesDl", "pdcpBytesUl"]
     target_storage_key = 'test_dataset_influx_01_1'
 
     ################# create pvc ########################
@@ -42,7 +41,6 @@ def pipeline(featurepath: str, epochs: str, modelname: str, modelversion:str):
 
     ##################### download feature ##################
     comp1 = download_features(featurepath= featurepath,
-                             featureList=featureList,
                              target_storage_config=config_str,
                              target_storage_key=target_storage_key)
     comp1.set_caching_options(False)
@@ -52,8 +50,7 @@ def pipeline(featurepath: str, epochs: str, modelname: str, modelversion:str):
     print(f"output of feature extraction:{comp1.output}")
 
     ####################   model training #################
-    comp2 = model_training(featurepath=target_storage_key,
-                           featureList=featureList,
+    comp2 = model_training(featurepath=featurepath,
                            model_config={"a": "b"},
                            target_storage_config=config_str,
                            target_dataset_name=target_storage_key)

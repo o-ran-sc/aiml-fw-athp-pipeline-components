@@ -24,8 +24,42 @@ from typing import List, Dict, NamedTuple
     target_image="model_training:v1",
     pip_index_urls=["https://pypi.org/simple/"],
 )
+def _extract_feature_group_name(featurepath: str) -> str:
+    """
+    Extract feature group name from featurepath
+    Example: 'aimlfw_feature_08_3' -> 'aimlfw_feature_08'
+    """
+    # Split by underscore and remove the last part (training job id)
+    parts = featurepath.split('_')
+    if len(parts) >= 2:
+        # Remove trailing numeric parts to get feature group name
+        while parts and parts[-1].isdigit():
+            parts.pop()
+        return '_'.join(parts)
+    return featurepath
+def _get_feature_list_from_config(feature_group_name: str) -> List[str]:
+    """
+    Retrieve feature group configuration and extract feature list
+    Returns: List of feature names
+    """
+    import requests
+
+    BASE_URL = f"http://localhost:32002"
+    try:
+        url = f"{BASE_URL}/featureGroup/{feature_group_name}"
+        r = requests.get(url)
+        r.raise_for_status()
+        data = r.json()
+        s = data.get("feature_list", "")
+        # Example: "pdcpBytesDl,pdcpBytesUl" -> ["pdcpBytesDl", "pdcpBytesUl"]
+        featureList = [x.strip() for x in s.split(",") if x.strip()]
+        return featureList
+
+    except Exception as e:
+        return []
+
 def model_training(featurepath: str, target_storage_config: Dict[str, str],
-                   target_dataset_name: str, featureList: List[str],
+                   target_dataset_name: str,
                    model_config: Dict[str, str],
                    model_type: str = 'LSTM') -> NamedTuple('outputs', path=str, accuracy=str): # type: ignore
     from logger import get_default_logger
@@ -33,6 +67,8 @@ def model_training(featurepath: str, target_storage_config: Dict[str, str],
     import pandas as pd
     from modelmetricsdk.artifact_manager import ArtifactManager
 
+    feature_group_name = _extract_feature_group_name(featurepath)
+    featureList = _get_feature_list_from_config(feature_group_name)
     logger = get_default_logger(name='model-training')
     logger.info(f'model training will be done with featurepath:{featurepath} featurelist:{featureList} model_type:{model_type}')
 
@@ -44,9 +80,8 @@ def model_training(featurepath: str, target_storage_config: Dict[str, str],
     logger.debug(f'dataframe after download: {features.head()}')
 
     logger.debug(f'Previous Data Types are --> ', features.dtypes)
-    # TODO: Needed to fix to make generic
-    features["pdcpBytesDl"] = pd.to_numeric(features["pdcpBytesDl"], downcast="float")
-    features["pdcpBytesUl"] = pd.to_numeric(features["pdcpBytesUl"], downcast="float")
+    for col in featureList:
+        features[col] = pd.to_numeric(features[col], errors="coerce", downcast="float")
     logger.debug(f'New Data Types are --> ', features.dtypes)
 
     X, y = split_series(features.values, 10, 1)

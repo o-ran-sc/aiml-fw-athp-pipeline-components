@@ -24,16 +24,33 @@ from typing import List, Dict
     target_image="feature_extraction:v1",
     pip_index_urls=["https://pypi.org/simple/"],
 )
-def download_features(featurepath: str, featureList: List[str],
+def download_features(featurepath: str,
                       target_storage_config: Dict[str, str], target_storage_key: str)->str:
     import json
+    import requests
     from logger import get_default_logger
     from featurestoresdk.feature_store_sdk import FeatureStoreSdk
     from modelmetricsdk.artifact_manager import ArtifactManager
 
+    # Extract feature_group_name from featurpath
+    parts = featurepath.split('_')
+    if len(parts) >= 2:
+        while parts and parts[-1].isdigit():
+            parts.pop()
+        '_'.join(parts)
+    feature_group_name = featurepath
+    BASE_URL = f"http://localhost:32002"
+    url = f"{BASE_URL}/featureGroup/{feature_group_name}"
+    r = requests.get(url)
+    r.raise_for_status()
+    data = r.json()
+    s = data["feature_list"]
+    # Example: "pdcpBytesDl,pdcpBytesUl" -> ["pdcpBytesDl", "pdcpBytesUl"]
+    featureList = [x.strip() for x in s.split(",") if x.strip()]
+    
     logger = get_default_logger(name='feature_extraction')
     logger.info(f'donwload feature from path:{featurepath} featurelist:{featureList}')
-
+    
     logger.debug(f'start extracting feature')
     fs_sdk = FeatureStoreSdk()
     features = fs_sdk.get_features(featurepath, featureList)
