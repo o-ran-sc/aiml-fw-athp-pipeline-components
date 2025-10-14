@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ac86f903_a50bc99f",
+        "filename": "components/feature_extraction/feature_extraction/feature_extraction_component.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-10-14T08:56:22Z",
+      "side": 1,
+      "message": "What about using [`tm.traininghost`](https://gerrit.o-ran-sc.org/r/gitweb?p\u003daiml-fw/aimlfw-dep.git;a\u003dblob;f\u003daimlfw-common/Common-Template/helm/aimlfw-common/templates/_tm.tpl;h\u003d9a6a76a4c59e87451dd2d228d9001e76040f8090;hb\u003dHEAD#l83) instead of localhost?",
+      "range": {
+        "startLine": 42,
+        "startChar": 24,
+        "endLine": 42,
+        "endChar": 33
+      },
+      "revId": "855fbc75deffc1d142d2fe71c8bf3c770299f9ba",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2b2f6224_d077ca43",
+        "filename": "components/model_training/model_training/model_training_component.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-10-14T08:56:22Z",
+      "side": 1,
+      "message": "Please add an empty line between lines 39 and 40.",
+      "range": {
+        "startLine": 39,
+        "startChar": 0,
+        "endLine": 40,
+        "endChar": 72
+      },
+      "revId": "855fbc75deffc1d142d2fe71c8bf3c770299f9ba",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c3a0f900_ff584d08",
+        "filename": "components/model_training/model_training/model_training_component.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-10-14T08:56:22Z",
+      "side": 1,
+      "message": "What about using [`tm.traininghost`](https://gerrit.o-ran-sc.org/r/gitweb?p\u003daiml-fw/aimlfw-dep.git;a\u003dblob;f\u003daimlfw-common/Common-Template/helm/aimlfw-common/templates/_tm.tpl;h\u003d9a6a76a4c59e87451dd2d228d9001e76040f8090;hb\u003dHEAD#l83) instead of localhost?",
+      "range": {
+        "startLine": 47,
+        "startChar": 24,
+        "endLine": 47,
+        "endChar": 33
+      },
+      "revId": "855fbc75deffc1d142d2fe71c8bf3c770299f9ba",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "908da13f_4476d83b",
+        "filename": "components/model_training/model_training/model_training_component.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1002137
+      },
+      "writtenOn": "2025-10-14T08:56:22Z",
+      "side": 1,
+      "message": "It would be nice to add a log for `featureList` for ease of debug",
+      "revId": "855fbc75deffc1d142d2fe71c8bf3c770299f9ba",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
