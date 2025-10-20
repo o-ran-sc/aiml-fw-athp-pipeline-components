@@ -1,0 +1,786 @@
+# PIPELINE DEFINITION
+# Name: green-network-traffic-forecasting-pipeline-v3
+# Description: Deep Learning Based Traffic Forecasting with Carbon Tracking for Green Network
+# Inputs:
+#    batch_size: int [Default: 32.0]
+#    cassandra_host: str [Default: 'cassandra.traininghost.svc.cluster.local']
+#    cassandra_keyspace: str [Default: 'ml_metrics']
+#    cassandra_password: str [Default: 'b3lpnlyZLn']
+#    cassandra_port: int [Default: 9042.0]
+#    cassandra_username: str [Default: 'cassandra']
+#    cell_name: str
+#    epochs: int [Default: 50.0]
+#    influxdb_bucket: str [Default: 'Viavi_Dataset']
+#    influxdb_org: str [Default: 'primary']
+#    influxdb_token: str [Default: 'your-influxdb-token']
+#    influxdb_url: str [Default: 'http://influxdb2.nonrtric.svc.cluster.local:8086']
+#    learning_rate: float [Default: 0.003]
+#    s3_access_key: str [Default: 'minioadmin']
+#    s3_bucket: str [Default: 'ml-models']
+#    s3_endpoint: str [Default: 'http://minio-service.kubeflow.svc.cluster.local:9000']
+#    s3_secret_key: str [Default: 'minioadmin']
+#    sequence_length: int [Default: 24.0]
+#    time_range_days: int [Default: 30.0]
+#    train_split_ratio: float [Default: 0.7]
+#    training_job_name: str [Default: 'green-network-lstm']
+#    version: str [Default: 'v1']
+components:
+  comp-feature-extraction-for-green-network:
+    executorLabel: exec-feature-extraction-for-green-network
+    inputDefinitions:
+      parameters:
+        cell_name:
+          isOptional: true
+          parameterType: STRING
+        influxdb_bucket:
+          parameterType: STRING
+        influxdb_org:
+          parameterType: STRING
+        influxdb_token:
+          parameterType: STRING
+        influxdb_url:
+          parameterType: STRING
+        s3_access_key:
+          parameterType: STRING
+        s3_bucket:
+          parameterType: STRING
+        s3_endpoint:
+          parameterType: STRING
+        s3_secret_key:
+          parameterType: STRING
+        time_range_days:
+          defaultValue: 30.0
+          isOptional: true
+          parameterType: NUMBER_INTEGER
+        training_job_name:
+          parameterType: STRING
+    outputDefinitions:
+      artifacts:
+        features_csv:
+          artifactType:
+            schemaTitle: system.Dataset
+            schemaVersion: 0.0.1
+      parameters:
+        Output:
+          parameterType: STRUCT
+  comp-metrics-store-for-green-network:
+    executorLabel: exec-metrics-store-for-green-network
+    inputDefinitions:
+      parameters:
+        cassandra_host:
+          parameterType: STRING
+        cassandra_keyspace:
+          parameterType: STRING
+        cassandra_password:
+          parameterType: STRING
+        cassandra_port:
+          parameterType: NUMBER_INTEGER
+        cassandra_username:
+          parameterType: STRING
+        co2_emissions_kg:
+          parameterType: NUMBER_DOUBLE
+        cpu_energy_kwh:
+          parameterType: NUMBER_DOUBLE
+        gpu_energy_kwh:
+          parameterType: NUMBER_DOUBLE
+        ram_energy_kwh:
+          parameterType: NUMBER_DOUBLE
+        test_rmse:
+          parameterType: NUMBER_DOUBLE
+        train_rmse:
+          parameterType: NUMBER_DOUBLE
+        training_job_name:
+          parameterType: STRING
+        training_time:
+          parameterType: NUMBER_DOUBLE
+        version:
+          parameterType: STRING
+  comp-model-storage-for-green-network:
+    executorLabel: exec-model-storage-for-green-network
+    inputDefinitions:
+      artifacts:
+        model_input:
+          artifactType:
+            schemaTitle: system.Model
+            schemaVersion: 0.0.1
+      parameters:
+        co2_emissions_kg:
+          parameterType: NUMBER_DOUBLE
+        s3_access_key:
+          parameterType: STRING
+        s3_bucket:
+          parameterType: STRING
+        s3_endpoint:
+          parameterType: STRING
+        s3_secret_key:
+          parameterType: STRING
+        test_rmse:
+          parameterType: NUMBER_DOUBLE
+        train_rmse:
+          parameterType: NUMBER_DOUBLE
+        training_job_name:
+          parameterType: STRING
+        version:
+          parameterType: STRING
+    outputDefinitions:
+      parameters:
+        model_size_mb:
+          parameterType: NUMBER_DOUBLE
+        model_url:
+          parameterType: STRING
+  comp-model-training-for-green-network:
+    executorLabel: exec-model-training-for-green-network
+    inputDefinitions:
+      artifacts:
+        features_csv:
+          artifactType:
+            schemaTitle: system.Dataset
+            schemaVersion: 0.0.1
+      parameters:
+        batch_size:
+          defaultValue: 32.0
+          isOptional: true
+          parameterType: NUMBER_INTEGER
+        epochs:
+          defaultValue: 50.0
+          isOptional: true
+          parameterType: NUMBER_INTEGER
+        learning_rate:
+          defaultValue: 0.003
+          isOptional: true
+          parameterType: NUMBER_DOUBLE
+        s3_access_key:
+          parameterType: STRING
+        s3_bucket:
+          parameterType: STRING
+        s3_endpoint:
+          parameterType: STRING
+        s3_secret_key:
+          parameterType: STRING
+        sequence_length:
+          defaultValue: 24.0
+          isOptional: true
+          parameterType: NUMBER_INTEGER
+        train_split_ratio:
+          defaultValue: 0.7
+          isOptional: true
+          parameterType: NUMBER_DOUBLE
+        training_job_name:
+          parameterType: STRING
+    outputDefinitions:
+      artifacts:
+        model_output:
+          artifactType:
+            schemaTitle: system.Model
+            schemaVersion: 0.0.1
+      parameters:
+        co2_emissions_kg:
+          parameterType: NUMBER_DOUBLE
+        cpu_energy_kwh:
+          parameterType: NUMBER_DOUBLE
+        gpu_energy_kwh:
+          parameterType: NUMBER_DOUBLE
+        ram_energy_kwh:
+          parameterType: NUMBER_DOUBLE
+        test_rmse:
+          parameterType: NUMBER_DOUBLE
+        train_rmse:
+          parameterType: NUMBER_DOUBLE
+        training_time:
+          parameterType: NUMBER_DOUBLE
+deploymentSpec:
+  executors:
+    exec-feature-extraction-for-green-network:
+      container:
+        args:
+        - --executor_input
+        - '{{$}}'
+        - --function_to_execute
+        - feature_extraction_for_green_network
+        command:
+        - sh
+        - -c
+        - "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip ||\
+          \ python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1\
+          \ python3 -m pip install --quiet --no-warn-script-location 'influxdb-client==1.38.0'\
+          \ 'pandas==2.1.0' 'boto3==1.28.0' 'numpy==1.24.3'  &&  python3 -m pip install\
+          \ --quiet --no-warn-script-location 'kfp==2.14.3' '--no-deps' 'typing-extensions>=3.7.4,<5;\
+          \ python_version<\"3.9\"' && \"$0\" \"$@\"\n"
+        - sh
+        - -ec
+        - 'program_path=$(mktemp -d)
+
+
+          printf "%s" "$0" > "$program_path/ephemeral_component.py"
+
+          _KFP_RUNTIME=true python3 -m kfp.dsl.executor_main                         --component_module_path                         "$program_path/ephemeral_component.py"                         "$@"
+
+          '
+        - "\nimport kfp\nfrom kfp import dsl\nfrom kfp.dsl import *\nfrom typing import\
+          \ *\n\ndef feature_extraction_for_green_network(\n    training_job_name:\
+          \ str,\n    influxdb_url: str,\n    influxdb_token: str,\n    influxdb_org:\
+          \ str,\n    influxdb_bucket: str,\n    s3_endpoint: str,\n    s3_access_key:\
+          \ str,\n    s3_secret_key: str,\n    s3_bucket: str,\n    features_csv:\
+          \ Output[Dataset],\n    cell_name: Optional[str] = None,\n    time_range_days:\
+          \ int = 30\n) -> dict:\n    import pandas as pd\n    import numpy as np\n\
+          \    from influxdb_client import InfluxDBClient\n    import boto3\n    from\
+          \ datetime import datetime, timedelta\n    import traceback\n\n    try:\n\
+          \        # ---------------------------\n        # Connect to InfluxDB\n\
+          \        # ---------------------------\n        client = InfluxDBClient(\n\
+          \            url=influxdb_url,\n            token=influxdb_token,\n    \
+          \        org=influxdb_org\n        )\n        query_api = client.query_api()\n\
+          \n        # ---------------------------\n        # Build Flux query\n  \
+          \      # ---------------------------\n        time_range = f\"-{time_range_days}d\"\
+          \n        cell_filter = \"\"\n        if cell_name:\n            cell_filter\
+          \ = f'|> filter(fn: (r) => r[\"Viavi.Cell.Name\"] == \"{cell_name}\")'\n\
+          \n        flux_query = f'''\n        from(bucket: \"{influxdb_bucket}\"\
+          )\n            |> range(start: {time_range})\n            |> filter(fn:\
+          \ (r) => r[\"_measurement\"] == \"cell_metrics\")\n            |> filter(fn:\
+          \ (r) => r[\"_field\"] == \"RRU.PrbUsedDl\")\n            {cell_filter}\n\
+          \            |> sort(columns: [\"_time\"])\n            |> keep(columns:\
+          \ [\"_time\", \"_value\", \"Viavi.Cell.Name\"])\n        '''\n\n       \
+          \ # ---------------------------\n        # Query & process dataframe\n \
+          \       # ---------------------------\n        result = query_api.query_data_frame(flux_query)\n\
+          \        client.close()\n\n        if result.empty:\n            raise ValueError(\"\
+          No data returned from InfluxDB\")\n\n        df = result.rename(columns={\n\
+          \            '_time': 'timestamp',\n            '_value': 'RRU.PrbUsedDl',\n\
+          \            'Viavi.Cell.Name': 'cell_name'\n        })[['timestamp', 'RRU.PrbUsedDl']]\n\
+          \n        df = df.sort_values('timestamp').reset_index(drop=True)\n    \
+          \    df = df[df.index % 30 == 0].reset_index(drop=True)  # downsampling\n\
+          \n        # Fill missing values if any\n        if df['RRU.PrbUsedDl'].isna().sum()\
+          \ > 0:\n            df['RRU.PrbUsedDl'].fillna(method='ffill', inplace=True)\n\
+          \            df['RRU.PrbUsedDl'].fillna(method='bfill', inplace=True)\n\n\
+          \        # ---------------------------\n        # Save to CSV and upload\
+          \ to S3\n        # ---------------------------\n        local_csv_path =\
+          \ f\"/tmp/{training_job_name}_features.csv\"\n        df.to_csv(local_csv_path,\
+          \ index=False)\n\n        s3_client = boto3.client(\n            's3',\n\
+          \            endpoint_url=s3_endpoint,\n            aws_access_key_id=s3_access_key,\n\
+          \            aws_secret_access_key=s3_secret_key\n        )\n        s3_key\
+          \ = f\"green-network/features/{training_job_name}_features.csv\"\n     \
+          \   s3_client.upload_file(local_csv_path, s3_bucket, s3_key)\n        s3_path\
+          \ = f\"s3://{s3_bucket}/{s3_key}\"\n\n        import shutil\n        shutil.copy(local_csv_path,\
+          \ features_csv.path)\n\n        # ---------------------------\n        #\
+          \ Return metadata\n        # ---------------------------\n        return\
+          \ {\n            'num_samples': int(len(df)),\n            'features': ['RRU.PrbUsedDl'],\n\
+          \            'csv_path': s3_path,\n            'time_range': f\"{df['timestamp'].min()}\
+          \ to {df['timestamp'].max()}\",\n            'statistics': {\n         \
+          \       'mean': float(df['RRU.PrbUsedDl'].mean()),\n                'std':\
+          \ float(df['RRU.PrbUsedDl'].std()),\n                'min': float(df['RRU.PrbUsedDl'].min()),\n\
+          \                'max': float(df['RRU.PrbUsedDl'].max())\n            }\n\
+          \        }\n\n    except Exception as e:\n        print(f\"Error in feature\
+          \ extraction: {e}\")\n        print(traceback.format_exc())\n        raise\n\
+          \n"
+        image: python:3.11-slim
+        resources:
+          cpuLimit: 1.0
+          cpuRequest: 0.5
+          memoryLimit: 2.147483648
+          memoryRequest: 1.073741824
+          resourceCpuLimit: '1'
+          resourceCpuRequest: 500m
+          resourceMemoryLimit: 2Gi
+          resourceMemoryRequest: 1Gi
+    exec-metrics-store-for-green-network:
+      container:
+        args:
+        - --executor_input
+        - '{{$}}'
+        - --function_to_execute
+        - metrics_store_for_green_network
+        command:
+        - sh
+        - -c
+        - "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip ||\
+          \ python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1\
+          \ python3 -m pip install --quiet --no-warn-script-location 'cassandra-driver==3.29.1'\
+          \  &&  python3 -m pip install --quiet --no-warn-script-location 'kfp==2.14.3'\
+          \ '--no-deps' 'typing-extensions>=3.7.4,<5; python_version<\"3.9\"' && \"\
+          $0\" \"$@\"\n"
+        - sh
+        - -ec
+        - 'program_path=$(mktemp -d)
+
+
+          printf "%s" "$0" > "$program_path/ephemeral_component.py"
+
+          _KFP_RUNTIME=true python3 -m kfp.dsl.executor_main                         --component_module_path                         "$program_path/ephemeral_component.py"                         "$@"
+
+          '
+        - "\nimport kfp\nfrom kfp import dsl\nfrom kfp.dsl import *\nfrom typing import\
+          \ *\n\ndef metrics_store_for_green_network(\n    training_job_name: str,\n\
+          \    version: str,\n    cassandra_host: str,\n    cassandra_port: int,\n\
+          \    cassandra_username: str,\n    cassandra_password: str,\n    cassandra_keyspace:\
+          \ str,\n    train_rmse: float,\n    test_rmse: float,\n    training_time:\
+          \ float,\n    ram_energy_kwh: float,\n    cpu_energy_kwh: float,\n    gpu_energy_kwh:\
+          \ float,\n    co2_emissions_kg: float\n):\n    from cassandra.cluster import\
+          \ Cluster\n    from cassandra.auth import PlainTextAuthProvider\n    from\
+          \ datetime import datetime\n    import traceback\n\n    try:\n        auth_provider\
+          \ = PlainTextAuthProvider(\n            username=cassandra_username,\n \
+          \           password=cassandra_password\n        )\n        cluster = Cluster(\n\
+          \            [cassandra_host],\n            port=cassandra_port,\n     \
+          \       auth_provider=auth_provider\n        )\n        session = cluster.connect(cassandra_keyspace)\n\
+          \n        create_table_cql = f\"\"\"\n        CREATE TABLE IF NOT EXISTS\
+          \ {cassandra_keyspace}.green_network_metrics (\n            training_job_name\
+          \ TEXT,\n            version TEXT,\n            timestamp TIMESTAMP,\n \
+          \           metric_type TEXT,\n            metric_name TEXT,\n         \
+          \   metric_value DOUBLE,\n            PRIMARY KEY ((training_job_name, version),\
+          \ timestamp, metric_type, metric_name)\n        ) WITH CLUSTERING ORDER\
+          \ BY (timestamp DESC, metric_type ASC, metric_name ASC);\n        \"\"\"\
+          \n        session.execute(create_table_cql)\n\n        timestamp = datetime.now()\n\
+          \        metrics = [\n            ('performance', 'train_rmse', train_rmse),\n\
+          \            ('performance', 'test_rmse', test_rmse),\n            ('energy',\
+          \ 'ram_energy_kwh', ram_energy_kwh),\n            ('energy', 'cpu_energy_kwh',\
+          \ cpu_energy_kwh),\n            ('energy', 'gpu_energy_kwh', gpu_energy_kwh),\n\
+          \            ('energy', 'total_energy_kwh', ram_energy_kwh + cpu_energy_kwh\
+          \ + gpu_energy_kwh),\n            ('carbon', 'co2_emissions_kg', co2_emissions_kg),\n\
+          \            ('carbon', 'co2_emissions_g', co2_emissions_kg * 1000),\n \
+          \           ('time', 'training_time_seconds', training_time),\n        \
+          \    ('time', 'training_time_minutes', training_time / 60)\n        ]\n\n\
+          \        insert_cql = f\"\"\"\n        INSERT INTO {cassandra_keyspace}.green_network_metrics\
+          \ \n        (training_job_name, version, timestamp, metric_type, metric_name,\
+          \ metric_value)\n        VALUES (?, ?, ?, ?, ?, ?)\n        \"\"\"\n   \
+          \     prepared = session.prepare(insert_cql)\n\n        for metric_type,\
+          \ metric_name, metric_value in metrics:\n            session.execute(prepared,\
+          \ (\n                training_job_name,\n                version,\n    \
+          \            timestamp,\n                metric_type,\n                metric_name,\n\
+          \                float(metric_value)\n            ))\n\n        cluster.shutdown()\n\
+          \n    except Exception as e:\n        print(f\"Error in metrics store: {e}\"\
+          )\n        print(traceback.format_exc())\n        raise\n\n"
+        image: python:3.11-slim
+        resources:
+          cpuLimit: 1.0
+          cpuRequest: 0.5
+          memoryLimit: 1.073741824
+          memoryRequest: 0.536870912
+          resourceCpuLimit: '1'
+          resourceCpuRequest: 500m
+          resourceMemoryLimit: 1Gi
+          resourceMemoryRequest: 512Mi
+    exec-model-storage-for-green-network:
+      container:
+        args:
+        - --executor_input
+        - '{{$}}'
+        - --function_to_execute
+        - model_storage_for_green_network
+        command:
+        - sh
+        - -c
+        - "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip ||\
+          \ python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1\
+          \ python3 -m pip install --quiet --no-warn-script-location 'boto3==1.28.0'\
+          \  &&  python3 -m pip install --quiet --no-warn-script-location 'kfp==2.14.3'\
+          \ '--no-deps' 'typing-extensions>=3.7.4,<5; python_version<\"3.9\"' && \"\
+          $0\" \"$@\"\n"
+        - sh
+        - -ec
+        - 'program_path=$(mktemp -d)
+
+
+          printf "%s" "$0" > "$program_path/ephemeral_component.py"
+
+          _KFP_RUNTIME=true python3 -m kfp.dsl.executor_main                         --component_module_path                         "$program_path/ephemeral_component.py"                         "$@"
+
+          '
+        - "\nimport kfp\nfrom kfp import dsl\nfrom kfp.dsl import *\nfrom typing import\
+          \ *\n\ndef model_storage_for_green_network(\n    model_input: Input[Model],\n\
+          \    training_job_name: str,\n    version: str,\n    s3_endpoint: str,\n\
+          \    s3_access_key: str,\n    s3_secret_key: str,\n    s3_bucket: str,\n\
+          \    train_rmse: float,\n    test_rmse: float,\n    co2_emissions_kg: float\n\
+          ) -> NamedTuple('Outputs', [('model_url', str), ('model_size_mb', float)]):\n\
+          \    import boto3\n    import json\n    from collections import namedtuple\n\
+          \    import traceback\n\n    try:\n        # Model Input\uC5D0\uC11C S3\
+          \ \uACBD\uB85C \uC77D\uAE30\n        with open(model_input.path, 'r') as\
+          \ f:\n            s3_path = f.read().strip()\n\n        print(f\"Model S3\
+          \ path: {s3_path}\")\n\n        # S3 \uACBD\uB85C \uD30C\uC2F1 (s3://bucket/key)\n\
+          \        if not s3_path.startswith('s3://'):\n            raise ValueError(f\"\
+          Invalid S3 path: {s3_path}\")\n\n        # s3://ml-models/green-network/models/...model.pth\
+          \ \uC5D0\uC11C key \uCD94\uCD9C\n        s3_key = s3_path.replace(f\"s3://{s3_bucket}/\"\
+          , \"\")\n\n        # S3 Client \uC0DD\uC131\n        s3_client = boto3.client(\n\
+          \            's3',\n            endpoint_url=s3_endpoint,\n            aws_access_key_id=s3_access_key,\n\
+          \            aws_secret_access_key=s3_secret_key\n        )\n\n        #\
+          \ \uBAA8\uB378 \uD30C\uC77C \uD06C\uAE30 \uD655\uC778\n        response\
+          \ = s3_client.head_object(Bucket=s3_bucket, Key=s3_key)\n        model_size_bytes\
+          \ = response['ContentLength']\n        model_size_mb = model_size_bytes\
+          \ / (1024 * 1024)\n\n        print(f\"Model size: {model_size_mb:.2f} MB\"\
+          )\n\n        # Metadata \uC0DD\uC131\n        metadata = {\n           \
+          \ 'training_job_name': training_job_name,\n            'version': version,\n\
+          \            'model_type': 'LSTM',\n            'framework': 'PyTorch',\n\
+          \            'metrics': {\n                'train_rmse': train_rmse,\n \
+          \               'test_rmse': test_rmse,\n                'co2_emissions_kg':\
+          \ co2_emissions_kg\n            },\n            'model_size_mb': model_size_mb,\n\
+          \            'model_s3_path': s3_path\n        }\n\n        # Metadata\uB97C\
+          \ S3\uC5D0 \uC5C5\uB85C\uB4DC\n        metadata_key = f\"green-network/models/{training_job_name}/{version}/metadata.json\"\
+          \n        metadata_json = json.dumps(metadata, indent=2)\n        s3_client.put_object(\n\
+          \            Bucket=s3_bucket,\n            Key=metadata_key,\n        \
+          \    Body=metadata_json.encode('utf-8'),\n            ContentType='application/json'\n\
+          \        )\n\n        print(f\"Metadata saved to: s3://{s3_bucket}/{metadata_key}\"\
+          )\n        print(f\"Model URL: {s3_path}\")\n\n        Outputs = namedtuple('Outputs',\
+          \ ['model_url', 'model_size_mb'])\n        return Outputs(model_url=s3_path,\
+          \ model_size_mb=model_size_mb)\n\n    except Exception as e:\n        print(f\"\
+          Error in model storage: {e}\")\n        print(traceback.format_exc())\n\
+          \        raise\n\n"
+        image: python:3.11-slim
+        resources:
+          cpuLimit: 1.0
+          cpuRequest: 0.5
+          memoryLimit: 2.147483648
+          memoryRequest: 1.073741824
+          resourceCpuLimit: '1'
+          resourceCpuRequest: 500m
+          resourceMemoryLimit: 2Gi
+          resourceMemoryRequest: 1Gi
+    exec-model-training-for-green-network:
+      container:
+        args:
+        - --executor_input
+        - '{{$}}'
+        - --function_to_execute
+        - model_training_for_green_network
+        command:
+        - sh
+        - -c
+        - "\nif ! [ -x \"$(command -v pip)\" ]; then\n    python3 -m ensurepip ||\
+          \ python3 -m ensurepip --user || apt-get install python3-pip\nfi\n\nPIP_DISABLE_PIP_VERSION_CHECK=1\
+          \ python3 -m pip install --quiet --no-warn-script-location 'torch==2.2.0'\
+          \ 'numpy==1.24.3' 'pandas==2.1.0' 'boto3==1.28.0' 'codecarbon==2.3.5' 'scikit-learn==1.3.0'\
+          \  &&  python3 -m pip install --quiet --no-warn-script-location 'kfp==2.14.3'\
+          \ '--no-deps' 'typing-extensions>=3.7.4,<5; python_version<\"3.9\"' && \"\
+          $0\" \"$@\"\n"
+        - sh
+        - -ec
+        - 'program_path=$(mktemp -d)
+
+
+          printf "%s" "$0" > "$program_path/ephemeral_component.py"
+
+          _KFP_RUNTIME=true python3 -m kfp.dsl.executor_main                         --component_module_path                         "$program_path/ephemeral_component.py"                         "$@"
+
+          '
+        - "\nimport kfp\nfrom kfp import dsl\nfrom kfp.dsl import *\nfrom typing import\
+          \ *\n\ndef model_training_for_green_network(\n    features_csv: Input[Dataset],\n\
+          \    training_job_name: str,\n    s3_endpoint: str,\n    s3_access_key:\
+          \ str,\n    s3_secret_key: str,\n    s3_bucket: str,\n    model_output:\
+          \ Output[Model],\n    sequence_length: int = 24,\n    epochs: int = 50,\n\
+          \    batch_size: int = 32,\n    learning_rate: float = 0.003,\n    train_split_ratio:\
+          \ float = 0.7\n) -> NamedTuple(\"Outputs\", [\n    (\"train_rmse\", float),\n\
+          \    (\"test_rmse\", float),\n    (\"training_time\", float),\n    (\"ram_energy_kwh\"\
+          , float),\n    (\"cpu_energy_kwh\", float),\n    (\"gpu_energy_kwh\", float),\n\
+          \    (\"co2_emissions_kg\", float),\n]):\n    import os\n    import time\n\
+          \    import pandas as pd\n    import numpy as np\n    import torch\n   \
+          \ import torch.nn as nn\n    from torch.utils.data import DataLoader, TensorDataset\n\
+          \    from sklearn.preprocessing import MinMaxScaler\n    from sklearn.metrics\
+          \ import mean_squared_error\n    import boto3\n    from codecarbon import\
+          \ EmissionsTracker\n\n    local_csv = features_csv.path\n    df = pd.read_csv(local_csv)\n\
+          \    data = df['RRU.PrbUsedDl'].values.reshape(-1, 1)\n    scaler = MinMaxScaler()\n\
+          \    scaled_data = scaler.fit_transform(data)\n\n    def create_sequences(data,\
+          \ seq_len):\n        xs, ys = [], []\n        for i in range(len(data) -\
+          \ seq_len):\n            xs.append(data[i:(i + seq_len)])\n            ys.append(data[i\
+          \ + seq_len])\n        return np.array(xs), np.array(ys)\n\n    X, y = create_sequences(scaled_data,\
+          \ sequence_length)\n    split_idx = int(len(X) * train_split_ratio)\n  \
+          \  X_train, X_test = X[:split_idx], X[split_idx:]\n    y_train, y_test =\
+          \ y[:split_idx], y[split_idx:]\n\n    X_train_t = torch.tensor(X_train,\
+          \ dtype=torch.float32)\n    y_train_t = torch.tensor(y_train, dtype=torch.float32)\n\
+          \    X_test_t = torch.tensor(X_test, dtype=torch.float32)\n    y_test_t\
+          \ = torch.tensor(y_test, dtype=torch.float32)\n    train_loader = DataLoader(TensorDataset(X_train_t,\
+          \ y_train_t), batch_size=batch_size, shuffle=True)\n\n    class LSTMModel(nn.Module):\n\
+          \        def __init__(self, input_size=1, hidden_size=64, num_layers=2):\n\
+          \            super().__init__()\n            self.lstm = nn.LSTM(input_size,\
+          \ hidden_size, num_layers, batch_first=True)\n            self.fc = nn.Linear(hidden_size,\
+          \ 1)\n        def forward(self, x):\n            out, _ = self.lstm(x)\n\
+          \            out = self.fc(out[:, -1, :])\n            return out\n\n  \
+          \  device = torch.device(\"cuda\" if torch.cuda.is_available() else \"cpu\"\
+          )\n    model = LSTMModel().to(device)\n    criterion = nn.MSELoss()\n  \
+          \  optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)\n\n\
+          \    tracker = EmissionsTracker(project_name=training_job_name, measure_power_secs=1)\n\
+          \    tracker.start()\n\n    start_time = time.time()\n    for epoch in range(epochs):\n\
+          \        model.train()\n        for batch_x, batch_y in train_loader:\n\
+          \            batch_x, batch_y = batch_x.to(device), batch_y.to(device)\n\
+          \            optimizer.zero_grad()\n            pred = model(batch_x)\n\
+          \            loss = criterion(pred, batch_y)\n            loss.backward()\n\
+          \            optimizer.step()\n    end_time = time.time()\n    duration\
+          \ = end_time - start_time\n    emissions = tracker.stop()\n\n    model.eval()\n\
+          \    with torch.no_grad():\n        preds = model(X_test_t.to(device)).cpu().numpy()\n\
+          \        y_true = y_test_t.cpu().numpy()\n        test_rmse_val = float(mean_squared_error(y_true,\
+          \ preds, squared=False))\n    train_rmse_val = float(loss.item())\n\n  \
+          \  model_path = f\"/tmp/{training_job_name}_model.pth\"\n    torch.save(model.state_dict(),\
+          \ model_path)\n\n    s3_client = boto3.client(\n        's3',\n        endpoint_url=s3_endpoint,\n\
+          \        aws_access_key_id=s3_access_key,\n        aws_secret_access_key=s3_secret_key\n\
+          \    )\n    s3_key = f\"green-network/models/{training_job_name}/model.pth\"\
+          \n    s3_client.upload_file(model_path, s3_bucket, s3_key)\n\n    with open(model_output.path,\
+          \ \"w\") as f:\n        f.write(f\"s3://{s3_bucket}/{s3_key}\")\n\n    ram_energy_kwh_val\
+          \ = float(getattr(emissions, \"ram_energy\", 0.0))\n    cpu_energy_kwh_val\
+          \ = float(getattr(emissions, \"cpu_energy\", 0.0))\n    gpu_energy_kwh_val\
+          \ = float(getattr(emissions, \"gpu_energy\", 0.0))\n    co2_emissions_kg_val\
+          \ = float(getattr(emissions, \"emissions\", 0.0))\n\n    return (\n    \
+          \    train_rmse_val,\n        test_rmse_val,\n        duration,\n      \
+          \  ram_energy_kwh_val,\n        cpu_energy_kwh_val,\n        gpu_energy_kwh_val,\n\
+          \        co2_emissions_kg_val,\n    )\n\n"
+        image: python:3.11-slim
+        resources:
+          cpuLimit: 2.0
+          cpuRequest: 0.5
+          memoryLimit: 2.147483648
+          memoryRequest: 1.073741824
+          resourceCpuLimit: '2'
+          resourceCpuRequest: 500m
+          resourceMemoryLimit: 2Gi
+          resourceMemoryRequest: 1Gi
+pipelineInfo:
+  description: Deep Learning Based Traffic Forecasting with Carbon Tracking for Green
+    Network
+  name: green-network-traffic-forecasting-pipeline-v3
+root:
+  dag:
+    tasks:
+      feature-extraction-for-green-network:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-feature-extraction-for-green-network
+        inputs:
+          parameters:
+            cell_name:
+              componentInputParameter: cell_name
+            influxdb_bucket:
+              componentInputParameter: influxdb_bucket
+            influxdb_org:
+              componentInputParameter: influxdb_org
+            influxdb_token:
+              componentInputParameter: influxdb_token
+            influxdb_url:
+              componentInputParameter: influxdb_url
+            s3_access_key:
+              componentInputParameter: s3_access_key
+            s3_bucket:
+              componentInputParameter: s3_bucket
+            s3_endpoint:
+              componentInputParameter: s3_endpoint
+            s3_secret_key:
+              componentInputParameter: s3_secret_key
+            time_range_days:
+              componentInputParameter: time_range_days
+            training_job_name:
+              componentInputParameter: training_job_name
+        taskInfo:
+          name: feature-extraction-for-green-network
+      metrics-store-for-green-network:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-metrics-store-for-green-network
+        dependentTasks:
+        - model-training-for-green-network
+        inputs:
+          parameters:
+            cassandra_host:
+              componentInputParameter: cassandra_host
+            cassandra_keyspace:
+              componentInputParameter: cassandra_keyspace
+            cassandra_password:
+              componentInputParameter: cassandra_password
+            cassandra_port:
+              componentInputParameter: cassandra_port
+            cassandra_username:
+              componentInputParameter: cassandra_username
+            co2_emissions_kg:
+              taskOutputParameter:
+                outputParameterKey: co2_emissions_kg
+                producerTask: model-training-for-green-network
+            cpu_energy_kwh:
+              taskOutputParameter:
+                outputParameterKey: cpu_energy_kwh
+                producerTask: model-training-for-green-network
+            gpu_energy_kwh:
+              taskOutputParameter:
+                outputParameterKey: gpu_energy_kwh
+                producerTask: model-training-for-green-network
+            ram_energy_kwh:
+              taskOutputParameter:
+                outputParameterKey: ram_energy_kwh
+                producerTask: model-training-for-green-network
+            test_rmse:
+              taskOutputParameter:
+                outputParameterKey: test_rmse
+                producerTask: model-training-for-green-network
+            train_rmse:
+              taskOutputParameter:
+                outputParameterKey: train_rmse
+                producerTask: model-training-for-green-network
+            training_job_name:
+              componentInputParameter: training_job_name
+            training_time:
+              taskOutputParameter:
+                outputParameterKey: training_time
+                producerTask: model-training-for-green-network
+            version:
+              componentInputParameter: version
+        taskInfo:
+          name: metrics-store-for-green-network
+      model-storage-for-green-network:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-model-storage-for-green-network
+        dependentTasks:
+        - model-training-for-green-network
+        inputs:
+          artifacts:
+            model_input:
+              taskOutputArtifact:
+                outputArtifactKey: model_output
+                producerTask: model-training-for-green-network
+          parameters:
+            co2_emissions_kg:
+              taskOutputParameter:
+                outputParameterKey: co2_emissions_kg
+                producerTask: model-training-for-green-network
+            s3_access_key:
+              componentInputParameter: s3_access_key
+            s3_bucket:
+              componentInputParameter: s3_bucket
+            s3_endpoint:
+              componentInputParameter: s3_endpoint
+            s3_secret_key:
+              componentInputParameter: s3_secret_key
+            test_rmse:
+              taskOutputParameter:
+                outputParameterKey: test_rmse
+                producerTask: model-training-for-green-network
+            train_rmse:
+              taskOutputParameter:
+                outputParameterKey: train_rmse
+                producerTask: model-training-for-green-network
+            training_job_name:
+              componentInputParameter: training_job_name
+            version:
+              componentInputParameter: version
+        taskInfo:
+          name: model-storage-for-green-network
+      model-training-for-green-network:
+        cachingOptions:
+          enableCache: true
+        componentRef:
+          name: comp-model-training-for-green-network
+        dependentTasks:
+        - feature-extraction-for-green-network
+        inputs:
+          artifacts:
+            features_csv:
+              taskOutputArtifact:
+                outputArtifactKey: features_csv
+                producerTask: feature-extraction-for-green-network
+          parameters:
+            batch_size:
+              componentInputParameter: batch_size
+            epochs:
+              componentInputParameter: epochs
+            learning_rate:
+              componentInputParameter: learning_rate
+            s3_access_key:
+              componentInputParameter: s3_access_key
+            s3_bucket:
+              componentInputParameter: s3_bucket
+            s3_endpoint:
+              componentInputParameter: s3_endpoint
+            s3_secret_key:
+              componentInputParameter: s3_secret_key
+            sequence_length:
+              componentInputParameter: sequence_length
+            train_split_ratio:
+              componentInputParameter: train_split_ratio
+            training_job_name:
+              componentInputParameter: training_job_name
+        taskInfo:
+          name: model-training-for-green-network
+  inputDefinitions:
+    parameters:
+      batch_size:
+        defaultValue: 32.0
+        isOptional: true
+        parameterType: NUMBER_INTEGER
+      cassandra_host:
+        defaultValue: cassandra.traininghost.svc.cluster.local
+        isOptional: true
+        parameterType: STRING
+      cassandra_keyspace:
+        defaultValue: ml_metrics
+        isOptional: true
+        parameterType: STRING
+      cassandra_password:
+        defaultValue: b3lpnlyZLn
+        isOptional: true
+        parameterType: STRING
+      cassandra_port:
+        defaultValue: 9042.0
+        isOptional: true
+        parameterType: NUMBER_INTEGER
+      cassandra_username:
+        defaultValue: cassandra
+        isOptional: true
+        parameterType: STRING
+      cell_name:
+        isOptional: true
+        parameterType: STRING
+      epochs:
+        defaultValue: 50.0
+        isOptional: true
+        parameterType: NUMBER_INTEGER
+      influxdb_bucket:
+        defaultValue: Viavi_Dataset
+        isOptional: true
+        parameterType: STRING
+      influxdb_org:
+        defaultValue: primary
+        isOptional: true
+        parameterType: STRING
+      influxdb_token:
+        defaultValue: your-influxdb-token
+        isOptional: true
+        parameterType: STRING
+      influxdb_url:
+        defaultValue: http://influxdb2.nonrtric.svc.cluster.local:8086
+        isOptional: true
+        parameterType: STRING
+      learning_rate:
+        defaultValue: 0.003
+        isOptional: true
+        parameterType: NUMBER_DOUBLE
+      s3_access_key:
+        defaultValue: minioadmin
+        isOptional: true
+        parameterType: STRING
+      s3_bucket:
+        defaultValue: ml-models
+        isOptional: true
+        parameterType: STRING
+      s3_endpoint:
+        defaultValue: http://minio-service.kubeflow.svc.cluster.local:9000
+        isOptional: true
+        parameterType: STRING
+      s3_secret_key:
+        defaultValue: minioadmin
+        isOptional: true
+        parameterType: STRING
+      sequence_length:
+        defaultValue: 24.0
+        isOptional: true
+        parameterType: NUMBER_INTEGER
+      time_range_days:
+        defaultValue: 30.0
+        isOptional: true
+        parameterType: NUMBER_INTEGER
+      train_split_ratio:
+        defaultValue: 0.7
+        isOptional: true
+        parameterType: NUMBER_DOUBLE
+      training_job_name:
+        defaultValue: green-network-lstm
+        isOptional: true
+        parameterType: STRING
+      version:
+        defaultValue: v1
+        isOptional: true
+        parameterType: STRING
+schemaVersion: 2.1.0
+sdkVersion: kfp-2.14.3
