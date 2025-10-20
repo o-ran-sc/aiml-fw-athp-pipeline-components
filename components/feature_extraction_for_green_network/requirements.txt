@@ -1,0 +1,4 @@
+influxdb-client==1.38.0
+pandas==2.1.0
+boto3==1.28.0
+numpy==1.24.3
