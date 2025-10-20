@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# IDE
+.vscode/
+.idea/
+
+# Virtual Environment
+venv/
+env/
+
+# Green Network - exclude build artifacts
+components/feature_extraction_for_green_network/Dockerfile
+components/feature_extraction_for_green_network/requirements.txt
+components/model_training_for_green_network/Dockerfile
+components/model_training_for_green_network/requirements.txt
+components/model_storage_for_green_network/Dockerfile
+components/model_storage_for_green_network/requirements.txt
+components/metrics_store_for_green_network/Dockerfile
+components/metrics_store_for_green_network/requirements.txt
