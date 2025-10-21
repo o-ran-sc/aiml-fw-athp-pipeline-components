@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b42eeee1_0fa20f4c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000475
+      },
+      "writtenOn": "2025-10-21T06:55:45Z",
+      "side": 1,
+      "message": "Idea of pipeline component is to reuse the existing component without creating new components.\n\nInput and configuration should influence those component to realize the life cycle of model training.",
+      "revId": "4c538bde2db64c6d000c22f2215c0c578c4466b2",
+      "serverId": "84e4e190-e623-4c37-9eda-58b1937c1b53"
+    }
+  ]
+}
